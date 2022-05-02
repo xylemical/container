@@ -1,0 +1,42 @@
+{
+  "name": "xylemical/container",
+  "type": "library",
+  "license": "MIT",
+  "description": "Provides framework for container compilation.",
+  "keywords": [
+    "container"
+  ],
+  "homepage": "https://github.com/xylemical/container",
+  "autoload": {
+    "psr-4": {
+      "Xylemical\\Container\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Xylemical\\Container\\": "tests/src/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=8.0",
+    "psr/container": ">=1.0",
+    "xylemical/code": "dev-master",
+    "xylemical/code-writer-twig": "dev-master",
+    "xylemical/code-php": "dev-master"
+  },
+  "require-dev": {
+    "xylemical/composer-dev-bundle": "^0.1.1",
+    "mikey179/vfsstream": "^1.6"
+  },
+  "scripts": {
+    "tests": "vendor/bin/phpunit && vendor/bin/phpstan analyse && vendor/bin/phpcs",
+    "test-coverage": "php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-html report"
+  },
+  "config": {
+    "allow-plugins": {
+      "phpstan/extension-installer": true
+    }
+  }
+}
