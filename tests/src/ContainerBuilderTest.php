@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Xylemical\Container;
 
+use App\Container;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Xylemical\Container\Definition\Definition;
 use Xylemical\Container\Definition\Service;
+use Xylemical\Container\Definition\ServiceDefinition;
 use Xylemical\Container\Definition\ServiceInterface;
+use Xylemical\Container\Definition\Source;
+use Xylemical\Container\Definition\SourceInterface;
 use Xylemical\Container\Exception\ContainerException;
-use Xylemical\Container\Source\Source;
-use Xylemical\Container\Source\SourceInterface;
-use App\Container;
 
 /**
  * Tests \Xylemical\Container\ContainerBuilder.
@@ -40,19 +41,19 @@ class ContainerBuilderTest extends TestCase {
   /**
    * Create a mock source.
    *
-   * @param array $definition
+   * @param array $services
    *   The definition.
    * @param int $timestamp
    *   The timestamp.
    *
-   * @return \Xylemical\Container\Source\SourceInterface
+   * @return \Xylemical\Container\Definition\SourceInterface
    *   The source.
    */
-  protected function getMockSource(array $definition, int $timestamp): SourceInterface {
+  protected function getMockSource(array $services, int $timestamp): SourceInterface {
     $source = $this->prophesize(SourceInterface::class);
     $source->getClass()->willReturn(Definition::class);
     $source->getTimestamp()->willReturn($timestamp);
-    $source->getDefinition()->willReturn($definition);
+    $source->getServices()->willReturn($services);
     $source->getServiceBuilders()->willReturn([]);
     $source->getArgumentBuilders()->willReturn([]);
     $source->getPropertyBuilders()->willReturn([]);
@@ -78,15 +79,11 @@ class ContainerBuilderTest extends TestCase {
     $this->assertInstanceOf($class, $container);
 
     $definition = [
-      [
-        'name' => ServiceInterface::class,
+      (new ServiceDefinition(ServiceInterface::class, [
         'class' => Service::class,
         'arguments' => ['@' . SourceInterface::class],
-      ],
-      [
-        'name' => SourceInterface::class,
-        'class' => Source::class,
-      ],
+      ])),
+      (new ServiceDefinition(SourceInterface::class, ['class' => Source::class])),
     ];
 
     $source = $this->getMockSource($definition, time() - 100);

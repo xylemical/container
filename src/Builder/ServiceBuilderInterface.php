@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Xylemical\Container\Builder;
 
+use Xylemical\Container\Definition\ServiceDefinition;
 use Xylemical\Container\Definition\ServiceInterface;
 
 /**
@@ -19,18 +20,18 @@ interface ServiceBuilderInterface {
   /**
    * Check the builder applies to the service source definition.
    *
-   * @param mixed $service
+   * @param \Xylemical\Container\Definition\ServiceDefinition $service
    *   The service source definition.
    *
    * @return bool
    *   The result.
    */
-  public function applies(mixed $service): bool;
+  public function applies(ServiceDefinition $service): bool;
 
   /**
    * Get the service definition.
    *
-   * @param mixed $service
+   * @param \Xylemical\Container\Definition\ServiceDefinition $service
    *   The service source.
    * @param \Xylemical\Container\Builder\BuilderInterface $builder
    *   The builder.
@@ -38,6 +39,6 @@ interface ServiceBuilderInterface {
    * @return \Xylemical\Container\Definition\ServiceInterface
    *   The service.
    */
-  public function build(mixed $service, BuilderInterface $builder): ServiceInterface;
+  public function build(ServiceDefinition $service, BuilderInterface $builder): ServiceInterface;
 
 }

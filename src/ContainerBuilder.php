@@ -6,8 +6,8 @@ namespace Xylemical\Container;
 
 use Xylemical\Container\Builder\Builder;
 use Xylemical\Container\Compiler\Compiler;
+use Xylemical\Container\Definition\SourceInterface;
 use Xylemical\Container\Exception\ContainerException;
-use Xylemical\Container\Source\SourceInterface;
 
 /**
  * Provides the builder for the container.
@@ -31,14 +31,14 @@ class ContainerBuilder {
   /**
    * The container source.
    *
-   * @var \Xylemical\Container\Source\SourceInterface
+   * @var \Xylemical\Container\Definition\SourceInterface
    */
   protected SourceInterface $source;
 
   /**
    * ContainerBuilder constructor.
    *
-   * @param \Xylemical\Container\Source\SourceInterface $source
+   * @param \Xylemical\Container\Definition\SourceInterface $source
    *   The source.
    * @param string $filename
    *   The filename to store the compiled container.

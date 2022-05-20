@@ -9,9 +9,9 @@ use Xylemical\Container\Definition\Argument\ServiceArgument;
 use Xylemical\Container\Definition\Definition;
 use Xylemical\Container\Definition\Service;
 use Xylemical\Container\Definition\ServiceInterface;
+use Xylemical\Container\Definition\Source;
+use Xylemical\Container\Definition\SourceInterface;
 use Xylemical\Container\Exception\CyclicDefinitionException;
-use Xylemical\Container\Source\Source;
-use Xylemical\Container\Source\SourceInterface;
 
 /**
  * Tests \Xylemical\Container\Compiler.

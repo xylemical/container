@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Xylemical\Container\Builder;
 
 use Xylemical\Container\Definition\Service;
+use Xylemical\Container\Definition\ServiceDefinition;
 use Xylemical\Container\Definition\ServiceInterface;
 use Xylemical\Container\Exception\InvalidDefinitionException;
 
@@ -22,8 +23,8 @@ abstract class ServiceBuilderBase implements ServiceBuilderInterface {
   /**
    * {@inheritdoc}
    */
-  public function applies(mixed $service): bool {
-    return is_array($service) && isset($service['class']);
+  public function applies(ServiceDefinition $service): bool {
+    return class_exists($service->getClass());
   }
 
   /**
@@ -31,9 +32,9 @@ abstract class ServiceBuilderBase implements ServiceBuilderInterface {
    *
    * @throws \Xylemical\Container\Exception\InvalidDefinitionException
    */
-  public function build(mixed $service, BuilderInterface $builder): ServiceInterface {
-    $class = (string) ($service['class'] ?? NULL);
-    $name = (string) ($service['name'] ?? $class);
+  public function build(ServiceDefinition $service, BuilderInterface $builder): ServiceInterface {
+    $class = $service->getClass();
+    $name = $service->getName();
     if (!class_exists($class) || !(class_exists($name) || interface_exists($name))) {
       throw new InvalidDefinitionException();
     }
@@ -48,7 +49,7 @@ abstract class ServiceBuilderBase implements ServiceBuilderInterface {
   /**
    * Build the arguments for the service.
    *
-   * @param array $definition
+   * @param \Xylemical\Container\Definition\ServiceDefinition $definition
    *   The definition.
    * @param \Xylemical\Container\Definition\ServiceInterface $service
    *   The service.
@@ -57,12 +58,10 @@ abstract class ServiceBuilderBase implements ServiceBuilderInterface {
    *
    * @throws \Xylemical\Container\Exception\InvalidDefinitionException
    */
-  protected function doArguments(array $definition, ServiceInterface $service, BuilderInterface $builder): void {
-    if (isset($definition['arguments']) && is_array($definition['arguments'])) {
-      foreach ($definition['arguments'] as $argument) {
-        if ($argument = $builder->getArgument($service, $argument)) {
-          $service->addArgument($argument);
-        }
+  protected function doArguments(ServiceDefinition $definition, ServiceInterface $service, BuilderInterface $builder): void {
+    foreach ($definition->getArguments() as $argument) {
+      if ($argument = $builder->getArgument($service, $argument)) {
+        $service->addArgument($argument);
       }
     }
   }
@@ -70,7 +69,7 @@ abstract class ServiceBuilderBase implements ServiceBuilderInterface {
   /**
    * Build the properties for the service.
    *
-   * @param array $definition
+   * @param \Xylemical\Container\Definition\ServiceDefinition $definition
    *   The definition.
    * @param \Xylemical\Container\Definition\ServiceInterface $service
    *   The service.
@@ -79,10 +78,8 @@ abstract class ServiceBuilderBase implements ServiceBuilderInterface {
    *
    * @throws \Xylemical\Container\Exception\InvalidDefinitionException
    */
-  protected function doProperties(array $definition, ServiceInterface $service, BuilderInterface $builder): void {
-    unset($definition['class'], $definition['name'], $definition['arguments']);
-
-    foreach ($definition as $key => $property) {
+  protected function doProperties(ServiceDefinition $definition, ServiceInterface $service, BuilderInterface $builder): void {
+    foreach ($definition->getProperties() as $key => $property) {
       if ($property = $builder->getProperty($key, $service, $property)) {
         $service->addProperty($property);
       }

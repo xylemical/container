@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Xylemical\Container\Builder;
 
 use Xylemical\Container\Builder\Service\GenericServiceBuilder;
+use Xylemical\Container\Definition\ServiceDefinition;
 use Xylemical\Container\Definition\ServiceInterface;
 
 /**
@@ -79,7 +80,7 @@ class ServiceBuilder extends ServiceBuilderBase {
   /**
    * {@inheritdoc}
    */
-  public function applies(mixed $service): bool {
+  public function applies(ServiceDefinition $service): bool {
     foreach ($this->builders as $builder) {
       if ($builder->applies($service)) {
         return TRUE;
@@ -93,7 +94,7 @@ class ServiceBuilder extends ServiceBuilderBase {
    *
    * @throws \Xylemical\Container\Exception\InvalidDefinitionException
    */
-  public function build(mixed $service, BuilderInterface $builder): ServiceInterface {
+  public function build(ServiceDefinition $service, BuilderInterface $builder): ServiceInterface {
     foreach ($this->builders as $serviceBuilder) {
       if ($serviceBuilder->applies($service)) {
         return $serviceBuilder->build($service, $builder);

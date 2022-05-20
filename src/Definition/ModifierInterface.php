@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Xylemical\Container\Source;
+namespace Xylemical\Container\Definition;
 
 /**
  * Provides modification of the sources before creating the definition.
@@ -23,11 +23,11 @@ interface ModifierInterface {
   public function getPriority(): int;
 
   /**
-   * Apply modification to the definition.
+   * Apply modification to the source.
    *
-   * @param array $definition
-   *   The definition.
+   * @param \Xylemical\Container\Definition\SourceInterface $source
+   *   The source.
    */
-  public function apply(array &$definition): void;
+  public function apply(SourceInterface $source): void;
 
 }

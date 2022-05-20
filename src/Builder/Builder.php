@@ -11,9 +11,10 @@ use Xylemical\Container\Builder\Service\GenericServiceBuilder;
 use Xylemical\Container\Definition\ArgumentInterface;
 use Xylemical\Container\Definition\DefinitionInterface;
 use Xylemical\Container\Definition\PropertyInterface;
+use Xylemical\Container\Definition\ServiceDefinition;
 use Xylemical\Container\Definition\ServiceInterface;
+use Xylemical\Container\Definition\SourceInterface;
 use Xylemical\Container\Exception\InvalidDefinitionException;
-use Xylemical\Container\Source\SourceInterface;
 
 /**
  * Provides a builder for a definition.
@@ -30,7 +31,7 @@ class Builder implements BuilderInterface {
   /**
    * Get the source.
    *
-   * @var \Xylemical\Container\Source\SourceInterface
+   * @var \Xylemical\Container\Definition\SourceInterface
    */
   protected SourceInterface $source;
 
@@ -67,32 +68,53 @@ class Builder implements BuilderInterface {
    *
    * @param string $class
    *   The container class name.
-   * @param \Xylemical\Container\Source\SourceInterface $source
+   * @param \Xylemical\Container\Definition\SourceInterface $source
    *   The source.
    */
   public function __construct(string $class, SourceInterface $source) {
     $this->class = $class;
     $this->source = $source;
     $this->serviceBuilder = (new ServiceBuilder())
-      ->setBuilders($source->getServiceBuilders())
+      ->setBuilders(
+        array_map(
+          function ($class) {
+            return new $class();
+          },
+          $source->getServiceBuilders()
+        )
+      )
       ->addBuilders([
         new GenericServiceBuilder(),
       ]);
     $this->argumentBuilder = (new ArgumentBuilder())
-      ->setBuilders($source->getArgumentBuilders())
+      ->setBuilders(
+        array_map(
+          function ($class) {
+            return new $class();
+          },
+          $source->getArgumentBuilders()
+        )
+      )
       ->addBuilders([
         new EnvironmentArgumentBuilder(),
         new ServiceArgumentBuilder(),
         new ValueArgumentBuilder(),
       ]);
     $this->propertyBuilder = (new PropertyBuilder())
-      ->setBuilders($source->getPropertyBuilders());
+      ->setBuilders(
+        array_map(
+          function ($class) {
+            return new $class();
+          },
+          $source->getPropertyBuilders()
+        )
+      );
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getService(mixed $service): ?ServiceInterface {
+  public function getService(ServiceDefinition $service): ?ServiceInterface {
     if ($this->serviceBuilder->applies($service)) {
       return $this->serviceBuilder->build($service, $this);
     }
@@ -138,9 +160,8 @@ class Builder implements BuilderInterface {
    * @throws \Xylemical\Container\Exception\InvalidDefinitionException
    */
   protected function build(): DefinitionInterface {
-    $definition = $this->source->getDefinition();
     $services = [];
-    foreach ($definition as $service) {
+    foreach ($this->source->getServices() as $service) {
       if ($service = $this->getService($service)) {
         $services[] = $service;
       }

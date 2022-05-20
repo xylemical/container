@@ -7,6 +7,7 @@ namespace Xylemical\Container\Builder;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Xylemical\Container\Definition\ServiceDefinition;
 use Xylemical\Container\Definition\ServiceInterface;
 use Xylemical\Container\Exception\InvalidDefinitionException;
 
@@ -57,12 +58,15 @@ class ServiceBuilderTest extends TestCase {
     $s1 = $this->getMockServiceBuilder(FALSE, NULL);
     $s2 = $this->getMockServiceBuilder(TRUE, $service);
 
+    $definition = $this->getMockBuilder(ServiceDefinition::class)
+      ->disableOriginalConstructor()
+      ->getMock();
     $builder->setBuilders([$s1]);
-    $this->assertFalse($builder->applies([]));
+    $this->assertFalse($builder->applies($definition));
 
     $builder->addBuilder($s2);
-    $this->assertTrue($builder->applies([]));
-    $this->assertSame($service, $builder->build([], $mockBuilder));
+    $this->assertTrue($builder->applies($definition));
+    $this->assertSame($service, $builder->build($definition, $mockBuilder));
   }
 
   /**
@@ -70,9 +74,12 @@ class ServiceBuilderTest extends TestCase {
    */
   public function testException(): void {
     $mockBuilder = $this->getMockBuilder(BuilderInterface::class)->getMock();
+    $definition = $this->getMockBuilder(ServiceDefinition::class)
+      ->disableOriginalConstructor()
+      ->getMock();
     $builder = new ServiceBuilder();
     $this->expectException(InvalidDefinitionException::class);
-    $builder->build([], $mockBuilder);
+    $builder->build($definition, $mockBuilder);
   }
 
 }

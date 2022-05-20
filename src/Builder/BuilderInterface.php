@@ -7,6 +7,7 @@ namespace Xylemical\Container\Builder;
 use Xylemical\Container\Definition\ArgumentInterface;
 use Xylemical\Container\Definition\DefinitionInterface;
 use Xylemical\Container\Definition\PropertyInterface;
+use Xylemical\Container\Definition\ServiceDefinition;
 use Xylemical\Container\Definition\ServiceInterface;
 
 /**
@@ -28,7 +29,7 @@ interface BuilderInterface {
   /**
    * Get the service definition.
    *
-   * @param mixed $service
+   * @param \Xylemical\Container\Definition\ServiceDefinition $service
    *   The service source.
    *
    * @return \Xylemical\Container\Definition\ServiceInterface|null
@@ -36,7 +37,7 @@ interface BuilderInterface {
    *
    * @throws \Xylemical\Container\Exception\InvalidDefinitionException
    */
-  public function getService(mixed $service): ?ServiceInterface;
+  public function getService(ServiceDefinition $service): ?ServiceInterface;
 
   /**
    * Get the argument definition.

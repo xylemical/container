@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Xylemical\Container\Source;
+namespace Xylemical\Container\Definition;
 
 /**
  * Provide a base modifier.
@@ -32,6 +32,6 @@ abstract class ModifierBase implements ModifierInterface {
   /**
    * {@inheritdoc}
    */
-  abstract public function apply(array &$definition): void;
+  abstract public function apply(SourceInterface $source): void;
 
 }

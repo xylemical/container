@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Xylemical\Container\Source;
+namespace Xylemical\Container\Definition;
 
 use PHPUnit\Framework\TestCase;
 
@@ -33,9 +33,10 @@ class ModifierTest extends TestCase {
     $modifier->setModifiers([$a, $b, $c, $d]);
     $this->assertEquals([$a, $b, $c, $d], $modifier->getModifiers());
 
-    $definition = [];
-    $modifier->apply($definition);
-    $this->assertEquals(['d', 'b', 'c', 'a'], $definition['modifier']);
+    $source = $this->getMockBuilder(SourceInterface::class)->getMock();
+    $modifier->apply($source);
+    // @phpstan-ignore-next-line
+    $this->assertEquals(['d', 'b', 'c', 'a'], $source->modifier);
   }
 
 }

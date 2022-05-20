@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Xylemical\Container\Source;
+namespace Xylemical\Container\Definition;
 
 /**
  * Provides a class for applying bulk modifications.
@@ -12,14 +12,14 @@ class Modifier extends ModifierBase {
   /**
    * The modifiers.
    *
-   * @var \Xylemical\Container\Source\ModifierInterface[][]
+   * @var \Xylemical\Container\Definition\ModifierInterface[][]
    */
   protected array $modifiers = [];
 
   /**
    * Get the modifiers.
    *
-   * @return \Xylemical\Container\Source\ModifierInterface[]
+   * @return \Xylemical\Container\Definition\ModifierInterface[]
    *   The modifier.
    */
   public function getModifiers(): array {
@@ -31,7 +31,7 @@ class Modifier extends ModifierBase {
   /**
    * Set the modifiers.
    *
-   * @param \Xylemical\Container\Source\ModifierInterface[] $modifiers
+   * @param \Xylemical\Container\Definition\ModifierInterface[] $modifiers
    *   The modifiers.
    *
    * @return $this
@@ -45,7 +45,7 @@ class Modifier extends ModifierBase {
   /**
    * Add modifiers.
    *
-   * @param \Xylemical\Container\Source\ModifierInterface[] $modifiers
+   * @param \Xylemical\Container\Definition\ModifierInterface[] $modifiers
    *   The modifiers.
    *
    * @return $this
@@ -60,7 +60,7 @@ class Modifier extends ModifierBase {
   /**
    * Add a modifier.
    *
-   * @param \Xylemical\Container\Source\ModifierInterface $modifier
+   * @param \Xylemical\Container\Definition\ModifierInterface $modifier
    *   The modifier.
    *
    * @return $this
@@ -73,11 +73,11 @@ class Modifier extends ModifierBase {
   /**
    * {@inheritdoc}
    */
-  public function apply(array &$definition): void {
+  public function apply(SourceInterface $source): void {
     krsort($this->modifiers);
     foreach ($this->modifiers as $modifiers) {
       foreach ($modifiers as $modifier) {
-        $modifier->apply($definition);
+        $modifier->apply($source);
       }
     }
   }

@@ -10,6 +10,7 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Xylemical\Container\Definition\ArgumentInterface;
 use Xylemical\Container\Definition\PropertyInterface;
 use Xylemical\Container\Definition\Service;
+use Xylemical\Container\Definition\ServiceDefinition;
 use Xylemical\Container\Definition\ServiceInterface;
 
 /**
@@ -35,15 +36,11 @@ class ServiceBuilderBaseTest extends TestCase {
 
     $serviceBuilder = $this->getMockForAbstractClass(ServiceBuilderBase::class);
 
-    $definition = [
-      'name' => ServiceInterface::class,
-      'class' => Service::class,
-      'arguments' => [
-        'dummy',
-      ],
-      'none' => 'none',
-      'test' => 'test',
-    ];
+    $definition = (new ServiceDefinition(ServiceInterface::class, []))
+      ->setClass(Service::class)
+      ->setArguments(['dummy'])
+      ->setProperty('none', 'none')
+      ->setProperty('test', 'test');
 
     $service = $serviceBuilder->build($definition, $builder->reveal());
     $this->assertEquals(ServiceInterface::class, $service->getName());
@@ -51,9 +48,7 @@ class ServiceBuilderBaseTest extends TestCase {
     $this->assertEquals([$argument], $service->getArguments());
     $this->assertEquals(['test' => $property], $service->getProperties());
 
-    $definition = [
-      'class' => Service::class,
-    ];
+    $definition = new ServiceDefinition(Service::class, []);
     $service = $serviceBuilder->build($definition, $builder->reveal());
     $this->assertEquals(Service::class, $service->getName());
     $this->assertEquals(Service::class, $service->getClass());

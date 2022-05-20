@@ -15,12 +15,13 @@ use Xylemical\Container\Definition\ArgumentInterface;
 use Xylemical\Container\Definition\Definition;
 use Xylemical\Container\Definition\PropertyInterface;
 use Xylemical\Container\Definition\Service;
+use Xylemical\Container\Definition\ServiceDefinition;
 use Xylemical\Container\Definition\ServiceInterface;
+use Xylemical\Container\Definition\SourceInterface;
 use Xylemical\Container\Definition\TestDefinition;
 use Xylemical\Container\Definition\TestProperty;
 use Xylemical\Container\Definition\TestService;
 use Xylemical\Container\Exception\InvalidDefinitionException;
-use Xylemical\Container\Source\SourceInterface;
 use Xylemical\Container\TestContainer;
 
 /**
@@ -78,35 +79,29 @@ class BuilderTest extends TestCase {
    * @param bool $custom
    *   The provides custom behaviours.
    *
-   * @return \Xylemical\Container\Source\SourceInterface
+   * @return \Xylemical\Container\Definition\SourceInterface
    *   The mocked source.
    */
   protected function getMockSource(bool $custom = FALSE): SourceInterface {
-    $definition = [
-      'class' => Service::class,
-      'arguments' => [
+    $definition = (new ServiceDefinition(Service::class))
+      ->setArguments([
         '%OMG:default%',
         '%FOO%',
         '@source',
         10,
         'something shocking',
-      ],
-      'test' => 'test',
-      'none' => 'none',
-    ];
+      ])
+      ->setProperty('test', 'test')
+      ->setProperty('none', 'none');
 
     $source = $this->prophesize(SourceInterface::class);
     $source->getClass()
       ->willReturn($custom ? TestDefinition::class : Definition::class);
-    $source->getDefinition()->willReturn([$definition]);
+    $source->getServices()->willReturn([$definition]);
     if ($custom) {
-      $source->getServiceBuilders()->willReturn([new TestServiceBuilder()]);
-      $source->getArgumentBuilders()->willReturn([
-        $this->getMockArgumentBuilder(10, new ServiceArgument('dummy')),
-      ]);
-      $source->getPropertyBuilders()->willReturn([
-        $this->getMockPropertyBuilder('test', new TestProperty()),
-      ]);
+      $source->getServiceBuilders()->willReturn([TestServiceBuilder::class]);
+      $source->getArgumentBuilders()->willReturn([TestArgumentBuilder::class]);
+      $source->getPropertyBuilders()->willReturn([TestPropertyBuilder::class]);
     }
     else {
       $source->getServiceBuilders()->willReturn([]);
@@ -122,10 +117,10 @@ class BuilderTest extends TestCase {
   public function testSanity(): void {
     $service = $this->getMockBuilder(ServiceInterface::class)->getMock();
 
+    $definition = new ServiceDefinition('test');
     $source = $this->getMockSource();
     $builder = new Builder(Container::class, $source);
-    $this->assertNull($builder->getService(NULL));
-    $this->assertNull($builder->getService('test'));
+    $this->assertNull($builder->getService($definition));
     $this->assertNull($builder->getProperty('test', $service, 'null'));
     $this->assertInstanceOf(ValueArgument::class, $builder->getArgument($service, NULL));
 
@@ -179,7 +174,7 @@ class BuilderTest extends TestCase {
   public function testInvalidDefinition(): void {
     $source = $this->prophesize(SourceInterface::class);
     $source->getClass()->willReturn(Service::class);
-    $source->getDefinition()->willReturn([]);
+    $source->getServices()->willReturn([]);
     $source->getServiceBuilders()->willReturn([]);
     $source->getArgumentBuilders()->willReturn([]);
     $source->getPropertyBuilders()->willReturn([]);

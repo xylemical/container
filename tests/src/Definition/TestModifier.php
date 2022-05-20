@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Xylemical\Container\Source;
+namespace Xylemical\Container\Definition;
 
 /**
  * A test modifier.
@@ -39,8 +39,9 @@ class TestModifier implements ModifierInterface {
   /**
    * {@inheritdoc}
    */
-  public function apply(array &$definition): void {
-    $definition['modifier'][] = $this->name;
+  public function apply(SourceInterface $source): void {
+    // @phpstan-ignore-next-line
+    $source->modifier[] = $this->name;
   }
 
 }
