@@ -27,7 +27,8 @@ class ServiceCollectorModifierTest extends TestCase {
         'method' => 'addTag',
       ]);
     $s2 = new ServiceDefinition('s2');
-    $s3 = new ServiceDefinition('s3');
+    $s3 = (new ServiceDefinition('s3'))
+      ->addTag('dummy', ['priority' => 1]);
 
     $source = $this->prophesize(SourceInterface::class);
     $source->findTaggedServices('service.collector')->willReturn([$s1]);
@@ -44,7 +45,7 @@ class ServiceCollectorModifierTest extends TestCase {
     $this->assertTrue($s1->hasProperty('service.collector'));
     $property = $s1->getProperty('service.collector');
     $this->assertEquals('addTag', $property['method']);
-    $this->assertEquals(['s2', 's3'], $property['services']);
+    $this->assertEquals(['s3', 's2'], $property['services']);
   }
 
 }
