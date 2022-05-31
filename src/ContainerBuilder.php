@@ -81,7 +81,7 @@ class ContainerBuilder {
    */
   protected function doBuildContainer(): void {
     $compiler = new Compiler();
-    $builder = new Builder($this->class, $this->source);
+    $builder = new Builder($this->class, $this->source->load());
     $contents = $compiler->compile($builder->getDefinition());
     if (!@file_put_contents($this->filename, $contents)) {
       throw new ContainerException("Unable to write to container file {$this->filename}.");
