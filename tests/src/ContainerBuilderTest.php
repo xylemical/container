@@ -57,6 +57,9 @@ class ContainerBuilderTest extends TestCase {
     $source->getServiceBuilders()->willReturn([]);
     $source->getArgumentBuilders()->willReturn([]);
     $source->getPropertyBuilders()->willReturn([]);
+    $source->load()->will(function () {
+      return $this;
+    });
     return $source->reveal();
   }
 
