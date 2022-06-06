@@ -29,6 +29,11 @@ class ContainerTest extends TestCase {
 
     $container = new TestContainer([S1::class => $s1]);
     $this->assertSame($s1, $container->get(S1::class));
+
+    $s1a = clone($s1);
+    $parent = new TestContainer([S1::class => $s1a]);
+    $container->setRoot($parent);
+    $this->assertSame($s1a, $container->get(S1::class));
   }
 
   /**

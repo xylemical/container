@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
+use Xylemical\Container\ContainerDecoratedInterface;
 
 /**
  * Tests \Xylemical\Container\Decorator\ChainedContainer.
@@ -37,6 +38,27 @@ class ChainedContainerTest extends TestCase {
     $this->assertTrue($decorated->get('bar'));
     $this->assertTrue($decorated->has('baz'));
     $this->assertFalse($decorated->get('baz'));
+  }
+
+  /**
+   * Test decorator behaviour.
+   */
+  public function testRoot(): void {
+    $root = $this->prophesize(ContainerInterface::class);
+    $root = $root->reveal();
+
+    $container = $this->prophesize(ContainerDecoratedInterface::class);
+    $container->setRoot(Argument::any())->will(function () {
+      return $this;
+    })->shouldBeCalledTimes(2);
+
+    $primary = $this->prophesize(ContainerDecoratedInterface::class);
+    $primary->setRoot(Argument::any())->will(function () {
+      return $this;
+    })->shouldBeCalledTimes(2);
+
+    $instance = new ChainedContainer($container->reveal(), $primary->reveal());
+    $instance->setRoot($root);
   }
 
 }

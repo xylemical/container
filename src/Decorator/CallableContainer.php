@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Xylemical\Container\Decorator;
 
 use Psr\Container\ContainerInterface;
+use Xylemical\Container\ContainerDecoratedInterface;
 
 /**
  * Provides a callable decorator container.
  */
-class CallableContainer implements ContainerInterface {
+class CallableContainer implements ContainerDecoratedInterface {
 
   /**
    * The decorated container.
@@ -34,6 +35,10 @@ class CallableContainer implements ContainerInterface {
    *   The callables.
    */
   public function __construct(ContainerInterface $container, array $callables = []) {
+    if ($container instanceof ContainerDecoratedInterface) {
+      $container->setRoot($this);
+    }
+
     $this->container = $container;
     $this->callables = $callables;
   }
@@ -53,6 +58,16 @@ class CallableContainer implements ContainerInterface {
    */
   public function has(string $id): bool {
     return isset($this->callables[$id]) || $this->container->has($id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setRoot(?ContainerInterface $container): static {
+    if ($this->container instanceof ContainerDecoratedInterface) {
+      $this->container->setRoot($container ?: $this);
+    }
+    return $this;
   }
 
 }

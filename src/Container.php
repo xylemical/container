@@ -10,7 +10,7 @@ use Xylemical\Container\Exception\NotFoundException;
 /**
  * Provides the base container for execution.
  */
-class Container implements ContainerInterface {
+class Container implements ContainerDecoratedInterface {
 
   /**
    * The service callbacks used to create the services.
@@ -23,6 +23,13 @@ class Container implements ContainerInterface {
    * @var array
    */
   protected array $services = [];
+
+  /**
+   * The root container.
+   *
+   * @var \Psr\Container\ContainerInterface|null
+   */
+  protected ?ContainerInterface $root = NULL;
 
   /**
    * Container constructor.
@@ -46,8 +53,13 @@ class Container implements ContainerInterface {
    *   The service
    *
    * @throws \Xylemical\Container\Exception\NotFoundException
+   * @throws \Psr\Container\ContainerExceptionInterface
    */
   public function get(string $id) {
+    if ($this->root?->has($id)) {
+      return $this->root->get($id);
+    }
+
     if (isset($this->services[$id])) {
       return $this->services[$id];
     }
@@ -65,6 +77,14 @@ class Container implements ContainerInterface {
    */
   public function has(string $id): bool {
     return isset(static::SERVICES[$id]) || isset($this->services[$id]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setRoot(?ContainerInterface $container): static {
+    $this->root = $container;
+    return $this;
   }
 
 }
