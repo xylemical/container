@@ -25,9 +25,9 @@ interface ModifierInterface {
   /**
    * Apply modification to the source.
    *
-   * @param \Xylemical\Container\Definition\SourceInterface $source
+   * @param \Xylemical\Container\Definition\Source $source
    *   The source.
    */
-  public function apply(SourceInterface $source): void;
+  public function apply(Source $source): void;
 
 }

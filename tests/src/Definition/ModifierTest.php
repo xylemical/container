@@ -33,7 +33,7 @@ class ModifierTest extends TestCase {
     $modifier->setModifiers([$a, $b, $c, $d]);
     $this->assertEquals([$a, $b, $c, $d], $modifier->getModifiers());
 
-    $source = $this->getMockBuilder(SourceInterface::class)->getMock();
+    $source = $this->getMockBuilder(Source::class)->getMock();
     $modifier->apply($source);
     // @phpstan-ignore-next-line
     $this->assertEquals(['d', 'b', 'c', 'a'], $source->modifier);

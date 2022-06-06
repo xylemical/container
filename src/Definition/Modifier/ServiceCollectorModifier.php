@@ -6,7 +6,7 @@ namespace Xylemical\Container\Definition\Modifier;
 
 use Xylemical\Container\Builder\Property\ServiceCollectorPropertyBuilder;
 use Xylemical\Container\Definition\ModifierBase;
-use Xylemical\Container\Definition\SourceInterface;
+use Xylemical\Container\Definition\Source;
 use function array_merge;
 use function array_reduce;
 use function intval;
@@ -20,7 +20,7 @@ class ServiceCollectorModifier extends ModifierBase {
   /**
    * {@inheritdoc}
    */
-  public function apply(SourceInterface $source): void {
+  public function apply(Source $source): void {
     $source->addPropertyBuilder(ServiceCollectorPropertyBuilder::class);
 
     $services = $source->findTaggedServices('service.collector');
@@ -39,7 +39,7 @@ class ServiceCollectorModifier extends ModifierBase {
   /**
    * Get the tagged services ordered by priority.
    *
-   * @param \Xylemical\Container\Definition\SourceInterface $source
+   * @param \Xylemical\Container\Definition\Source $source
    *   The source.
    * @param string $tag
    *   The tag.
@@ -47,7 +47,7 @@ class ServiceCollectorModifier extends ModifierBase {
    * @return \Xylemical\Container\Definition\ServiceDefinition[]
    *   The services.
    */
-  protected function getTaggedServices(SourceInterface $source, string $tag): array {
+  protected function getTaggedServices(Source $source, string $tag): array {
     $services = [];
     foreach ($source->findTaggedServices($tag) as $taggedService) {
       $info = $taggedService->getTag($tag);

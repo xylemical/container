@@ -10,9 +10,11 @@ use Xylemical\Container\Builder\Argument\ValueArgumentBuilder;
 use Xylemical\Container\Builder\Service\GenericServiceBuilder;
 use Xylemical\Container\Definition\ArgumentInterface;
 use Xylemical\Container\Definition\DefinitionInterface;
+use Xylemical\Container\Definition\Modifier;
 use Xylemical\Container\Definition\PropertyInterface;
 use Xylemical\Container\Definition\ServiceDefinition;
 use Xylemical\Container\Definition\ServiceInterface;
+use Xylemical\Container\Definition\Source;
 use Xylemical\Container\Definition\SourceInterface;
 use Xylemical\Container\Exception\InvalidDefinitionException;
 
@@ -73,42 +75,33 @@ class Builder implements BuilderInterface {
    */
   public function __construct(string $class, SourceInterface $source) {
     $this->class = $class;
+
+    $source = new Source($source);
+    $modifiers = new Modifier();
+    foreach ($source->getModifiers() as $modifier) {
+      $modifiers->addModifier(new $modifier());
+    }
+    $modifiers->apply($source);
     $this->source = $source;
+
+    $instantiate = function ($class) {
+      return new $class();
+    };
+
     $this->serviceBuilder = (new ServiceBuilder())
-      ->setBuilders(
-        array_map(
-          function ($class) {
-            return new $class();
-          },
-          $source->getServiceBuilders()
-        )
-      )
+      ->setBuilders(array_map($instantiate, $source->getServiceBuilders()))
       ->addBuilders([
         new GenericServiceBuilder(),
       ]);
     $this->argumentBuilder = (new ArgumentBuilder())
-      ->setBuilders(
-        array_map(
-          function ($class) {
-            return new $class();
-          },
-          $source->getArgumentBuilders()
-        )
-      )
+      ->setBuilders(array_map($instantiate, $source->getArgumentBuilders()))
       ->addBuilders([
         new EnvironmentArgumentBuilder(),
         new ServiceArgumentBuilder(),
         new ValueArgumentBuilder(),
       ]);
     $this->propertyBuilder = (new PropertyBuilder())
-      ->setBuilders(
-        array_map(
-          function ($class) {
-            return new $class();
-          },
-          $source->getPropertyBuilders()
-        )
-      );
+      ->setBuilders(array_map($instantiate, $source->getPropertyBuilders()));
   }
 
   /**

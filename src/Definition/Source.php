@@ -7,84 +7,38 @@ namespace Xylemical\Container\Definition;
 /**
  * Provide a generic in-memory source.
  */
-class Source implements SourceInterface {
+class Source extends AbstractSource {
 
   /**
-   * The definition class.
+   * Source constructor.
    *
-   * @var string
+   * @param \Xylemical\Container\Definition\SourceInterface|null $original
+   *   The original source.
    */
-  protected string $class = Definition::class;
-
-  /**
-   * The service definitions.
-   *
-   * @var \Xylemical\Container\Definition\ServiceDefinition[]
-   */
-  protected array $services = [];
-
-  /**
-   * The service builders.
-   *
-   * @var string[]
-   */
-  protected array $serviceBuilders = [];
-
-  /**
-   * The argument builders.
-   *
-   * @var string[]
-   */
-  protected array $argumentBuilders = [];
-
-  /**
-   * The property builders.
-   *
-   * @var string[]
-   */
-  protected array $propertyBuilders = [];
-
-  /**
-   * The source timestamp.
-   *
-   * @var int
-   */
-  protected int $timestamp;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function load(): static {
-    $source = $this->doLoad();
-
-    $this->class = $source['class'] ?? $this->class ?? Definition::class;
-    $this->serviceBuilders = $source['service_builders'] ?? [];
-    $this->argumentBuilders = $source['argument_builders'] ?? [];
-    $this->propertyBuilders = $source['property_builders'] ?? [];
-    $this->services = [];
-    foreach ($source['services'] ?? [] as $name => $definition) {
-      $this->services[$name] = new ServiceDefinition($name, $definition);
+  public function __construct(?SourceInterface $original = NULL) {
+    if (!$original) {
+      return;
     }
 
-    $modifiers = new Modifier();
-    foreach ($source['modifiers'] ?? [] as $modifier) {
-      $modifiers->addModifier(new $modifier());
+    $this->class = $original->getClass();
+    $this->serviceBuilders = $original->getServiceBuilders();
+    $this->propertyBuilders = $original->getPropertyBuilders();
+    $this->argumentBuilders = $original->getArgumentBuilders();
+    $this->modifiers = $original->getModifiers();
+    $this->timestamp = $original->getTimestamp();
+    foreach ($original->getServices() as $service) {
+      $service = clone($service);
+      $this->services[$service->getName()] = $service;
     }
-
-    $modifiers->apply($this);
-
-    return $this;
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getClass(): string {
-    return $this->class;
-  }
-
-  /**
-   * {@inheritdoc}
+   * Set the definition class.
+   *
+   * @param string $class
+   *   The definition class.
+   *
+   * @return $this
    */
   public function setClass(string $class): static {
     $this->class = $class;
@@ -92,28 +46,38 @@ class Source implements SourceInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Get a service.
+   *
+   * @param string $name
+   *   The service name.
+   *
+   * @return \Xylemical\Container\Definition\ServiceDefinition|null
+   *   The service or NULL.
    */
-  public function getServices(): array {
-    return $this->services;
+  public function getService(string $name): ?ServiceDefinition {
+    return $this->services[$name] ?? NULL;
   }
 
   /**
-   * {@inheritdoc}
+   * Check for service.
+   *
+   * @param string $name
+   *   The service name.
+   *
+   * @return bool
+   *   The result.
    */
-  public function getService(string $class): ?ServiceDefinition {
-    return $this->services[$class] ?? NULL;
+  public function hasService(string $name): bool {
+    return isset($this->services[$name]);
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function hasService(string $class): bool {
-    return isset($this->services[$class]);
-  }
-
-  /**
-   * {@inheritdoc}
+   * Set a service definition.
+   *
+   * @param \Xylemical\Container\Definition\ServiceDefinition $definition
+   *   The definition.
+   *
+   * @return $this
    */
   public function setService(ServiceDefinition $definition): static {
     $this->services[$definition->getName()] = $definition;
@@ -121,7 +85,13 @@ class Source implements SourceInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Find tagged services.
+   *
+   * @param string $tag
+   *   The tag.
+   *
+   * @return \Xylemical\Container\Definition\ServiceDefinition[]
+   *   The tagged services.
    */
   public function findTaggedServices(string $tag): array {
     $services = [];
@@ -134,14 +104,12 @@ class Source implements SourceInterface {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getServiceBuilders(): array {
-    return $this->serviceBuilders;
-  }
-
-  /**
-   * {@inheritdoc}
+   * Set the service builders.
+   *
+   * @param array $builders
+   *   The service builders.
+   *
+   * @return $this
    */
   public function setServiceBuilders(array $builders): static {
     $this->serviceBuilders = [];
@@ -152,14 +120,25 @@ class Source implements SourceInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Check for service builder.
+   *
+   * @param string $class
+   *   The service builder.
+   *
+   * @return bool
+   *   The result.
    */
   public function hasServiceBuilder(string $class): bool {
     return in_array($class, $this->serviceBuilders);
   }
 
   /**
-   * {@inheritdoc}
+   * Add a service builder.
+   *
+   * @param string $class
+   *   The service builder.
+   *
+   * @return $this
    */
   public function addServiceBuilder(string $class): static {
     if (!in_array($class, $this->serviceBuilders)) {
@@ -169,7 +148,12 @@ class Source implements SourceInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Remove a service builder.
+   *
+   * @param string $class
+   *   The service builder.
+   *
+   * @return $this
    */
   public function removeServiceBuilder(string $class): static {
     $this->serviceBuilders = array_filter(
@@ -182,14 +166,12 @@ class Source implements SourceInterface {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getArgumentBuilders(): array {
-    return $this->argumentBuilders;
-  }
-
-  /**
-   * {@inheritdoc}
+   * Set all the argument builders.
+   *
+   * @param array $builders
+   *   The argument builders.
+   *
+   * @return $this
    */
   public function setArgumentBuilders(array $builders): static {
     $this->argumentBuilders = [];
@@ -200,14 +182,25 @@ class Source implements SourceInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Check for argument builder.
+   *
+   * @param string $class
+   *   The argument builder.
+   *
+   * @return bool
+   *   The result.
    */
   public function hasArgumentBuilder(string $class): bool {
     return in_array($class, $this->argumentBuilders);
   }
 
   /**
-   * {@inheritdoc}
+   * Add an argument builder.
+   *
+   * @param string $class
+   *   The argument builder.
+   *
+   * @return $this
    */
   public function addArgumentBuilder(string $class): static {
     if (!in_array($class, $this->argumentBuilders)) {
@@ -217,7 +210,12 @@ class Source implements SourceInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Remove an argument builder.
+   *
+   * @param string $class
+   *   The argument builder.
+   *
+   * @return $this
    */
   public function removeArgumentBuilder(string $class): static {
     $this->argumentBuilders = array_filter(
@@ -230,14 +228,12 @@ class Source implements SourceInterface {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getPropertyBuilders(): array {
-    return $this->propertyBuilders;
-  }
-
-  /**
-   * {@inheritdoc}
+   * Set all the property builders.
+   *
+   * @param array $builders
+   *   The property builders.
+   *
+   * @return $this
    */
   public function setPropertyBuilders(array $builders): static {
     $this->propertyBuilders = [];
@@ -248,14 +244,25 @@ class Source implements SourceInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Check for property builder.
+   *
+   * @param string $class
+   *   The property builder.
+   *
+   * @return bool
+   *   The result.
    */
   public function hasPropertyBuilder(string $class): bool {
     return in_array($class, $this->propertyBuilders);
   }
 
   /**
-   * {@inheritdoc}
+   * Add a property builder.
+   *
+   * @param string $class
+   *   The property builder.
+   *
+   * @return $this
    */
   public function addPropertyBuilder(string $class): static {
     if (!in_array($class, $this->propertyBuilders)) {
@@ -265,7 +272,12 @@ class Source implements SourceInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Remove a property builder.
+   *
+   * @param string $class
+   *   The property builder.
+   *
+   * @return $this
    */
   public function removePropertyBuilder(string $class): static {
     $this->propertyBuilders = array_filter(
@@ -278,16 +290,6 @@ class Source implements SourceInterface {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getTimestamp(): int {
-    if (!isset($this->timestamp)) {
-      $this->timestamp = time();
-    }
-    return $this->timestamp;
-  }
-
-  /**
    * Sets the timestamp.
    *
    * @param int|null $timestamp
@@ -297,22 +299,12 @@ class Source implements SourceInterface {
    */
   public function setTimestamp(?int $timestamp): static {
     if (is_null($timestamp)) {
-      unset($this->timestamp);
+      $this->timestamp = time();
     }
     else {
       $this->timestamp = $timestamp;
     }
     return $this;
-  }
-
-  /**
-   * Loads the source definition.
-   *
-   * @return array
-   *   The definition.
-   */
-  protected function doLoad(): array {
-    return [];
   }
 
 }

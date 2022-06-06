@@ -73,7 +73,7 @@ class Modifier extends ModifierBase {
   /**
    * {@inheritdoc}
    */
-  public function apply(SourceInterface $source): void {
+  public function apply(Source $source): void {
     krsort($this->modifiers);
     foreach ($this->modifiers as $modifiers) {
       foreach ($modifiers as $modifier) {

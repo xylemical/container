@@ -6,11 +6,13 @@ namespace Xylemical\Container;
 
 use Psr\Container\ContainerInterface;
 use Xylemical\Container\Exception\NotFoundException;
+use function call_user_func;
+use function is_callable;
 
 /**
  * Provides the base container for execution.
  */
-class Container implements ContainerDecoratedInterface {
+class Container implements ContainerInterface {
 
   /**
    * The service callbacks used to create the services.
@@ -25,11 +27,11 @@ class Container implements ContainerDecoratedInterface {
   protected array $services = [];
 
   /**
-   * The root container.
+   * The dynamic services.
    *
-   * @var \Psr\Container\ContainerInterface|null
+   * @var array
    */
-  protected ?ContainerInterface $root = NULL;
+  protected array $dynamic = [];
 
   /**
    * Container constructor.
@@ -56,19 +58,20 @@ class Container implements ContainerDecoratedInterface {
    * @throws \Psr\Container\ContainerExceptionInterface
    */
   public function get(string $id) {
-    if ($this->root?->has($id)) {
-      return $this->root->get($id);
-    }
-
     if (isset($this->services[$id])) {
       return $this->services[$id];
     }
 
-    if (!isset(static::SERVICES[$id])) {
+    if (isset(static::SERVICES[$id])) {
+      $this->services[$id] = call_user_func([$this, static::SERVICES[$id]]);
+    }
+    elseif (isset($this->dynamic[$id]) && is_callable($this->dynamic[$id])) {
+      $this->services[$id] = ($this->dynamic[$id])();
+    }
+    else {
       throw new NotFoundException("Unable to find service definition {$id}.");
     }
 
-    $this->services[$id] = call_user_func([$this, static::SERVICES[$id]]);
     return $this->services[$id];
   }
 
@@ -76,14 +79,21 @@ class Container implements ContainerDecoratedInterface {
    * {@inheritdoc}
    */
   public function has(string $id): bool {
-    return isset(static::SERVICES[$id]) || isset($this->services[$id]);
+    return isset(static::SERVICES[$id]) ||
+      isset($this->dynamic[$id]) ||
+      isset($this->services[$id]);
   }
 
   /**
-   * {@inheritdoc}
+   * Add additional dynamic services.
+   *
+   * @param array $services
+   *   The services.
+   *
+   * @return $this
    */
-  public function setRoot(?ContainerInterface $container): static {
-    $this->root = $container;
+  public function add(array $services): static {
+    $this->dynamic += $services;
     return $this;
   }
 

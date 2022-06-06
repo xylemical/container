@@ -19,6 +19,7 @@ use Xylemical\Container\Definition\ServiceDefinition;
 use Xylemical\Container\Definition\ServiceInterface;
 use Xylemical\Container\Definition\SourceInterface;
 use Xylemical\Container\Definition\TestDefinition;
+use Xylemical\Container\Definition\TestModifier;
 use Xylemical\Container\Definition\TestProperty;
 use Xylemical\Container\Definition\TestService;
 use Xylemical\Container\Exception\InvalidDefinitionException;
@@ -102,12 +103,15 @@ class BuilderTest extends TestCase {
       $source->getServiceBuilders()->willReturn([TestServiceBuilder::class]);
       $source->getArgumentBuilders()->willReturn([TestArgumentBuilder::class]);
       $source->getPropertyBuilders()->willReturn([TestPropertyBuilder::class]);
+      $source->getModifiers()->willReturn([TestModifier::class]);
     }
     else {
       $source->getServiceBuilders()->willReturn([]);
       $source->getArgumentBuilders()->willReturn([]);
       $source->getPropertyBuilders()->willReturn([]);
+      $source->getModifiers()->willReturn([]);
     }
+    $source->getTimestamp()->willReturn(0);
     return $source->reveal();
   }
 
@@ -178,6 +182,8 @@ class BuilderTest extends TestCase {
     $source->getServiceBuilders()->willReturn([]);
     $source->getArgumentBuilders()->willReturn([]);
     $source->getPropertyBuilders()->willReturn([]);
+    $source->getModifiers()->willReturn([]);
+    $source->getTimestamp()->willReturn(0);
 
     $builder = new Builder(Container::class, $source->reveal());
 

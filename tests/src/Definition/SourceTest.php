@@ -92,7 +92,7 @@ class SourceTest extends TestCase {
   public function testLoad(): void {
     $source = (new TestSource)->load();
     $this->assertTrue($source->hasService(SourceInterface::class));
-    $this->assertTrue($source->hasPropertyBuilder(ServiceCollectorPropertyBuilder::class));
+    $this->assertFalse($source->hasPropertyBuilder(ServiceCollectorPropertyBuilder::class));
     $service = $source->getService(SourceInterface::class);
     $this->assertTrue($service->hasTag('test'));
     $this->assertTrue($service->hasTag('foo'));

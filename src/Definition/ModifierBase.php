@@ -32,6 +32,6 @@ abstract class ModifierBase implements ModifierInterface {
   /**
    * {@inheritdoc}
    */
-  abstract public function apply(SourceInterface $source): void;
+  abstract public function apply(Source $source): void;
 
 }

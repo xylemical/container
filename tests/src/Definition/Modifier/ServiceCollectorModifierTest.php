@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Xylemical\Container\Definition\ServiceDefinition;
-use Xylemical\Container\Definition\SourceInterface;
+use Xylemical\Container\Definition\Source;
 
 /**
  * Tests \Xylemical\Container\Definition\Modifier\ServiceCollectorModifier.
@@ -30,7 +30,7 @@ class ServiceCollectorModifierTest extends TestCase {
     $s3 = (new ServiceDefinition('s3'))
       ->addTag('dummy', ['priority' => 1]);
 
-    $source = $this->prophesize(SourceInterface::class);
+    $source = $this->prophesize(Source::class);
     $source->findTaggedServices('service.collector')->willReturn([$s1]);
     $source->findTaggedServices('dummy')->willReturn([$s2, $s3]);
     $source->addPropertyBuilder(Argument::any())->will(function ($args) {
