@@ -90,11 +90,13 @@ class Compiler {
         $this->calculateDependencies($definition, $definition->getService($dependency), $dependencies);
       }
 
-      if (in_array($name, $dependencies[$dependency])) {
-        throw new CyclicDefinitionException();
-      }
+      if (isset($dependencies[$dependency])) {
+        if (in_array($name, $dependencies[$dependency])) {
+          throw new CyclicDefinitionException();
+        }
 
-      $dependencies[$name] = array_merge($dependencies[$name], $dependencies[$dependency]);
+        $dependencies[$name] = array_merge($dependencies[$name], $dependencies[$dependency]);
+      }
     }
 
     return TRUE;
