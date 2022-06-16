@@ -45,10 +45,8 @@ class BuilderTest extends TestCase {
    */
   protected function getMockArgumentBuilder(mixed $definition, ?ArgumentInterface $argument): ArgumentBuilderInterface {
     $builder = $this->prophesize(ArgumentBuilderInterface::class);
-    $builder->applies($definition, Argument::any())->willReturn(TRUE);
     $builder->build($definition, Argument::any(), Argument::any())
       ->willReturn($argument);
-    $builder->applies(Argument::any(), Argument::any())->willReturn(FALSE);
     return $builder->reveal();
   }
 
@@ -65,12 +63,8 @@ class BuilderTest extends TestCase {
    */
   protected function getMockPropertyBuilder(mixed $definition, ?PropertyInterface $property): PropertyBuilderInterface {
     $builder = $this->prophesize(PropertyBuilderInterface::class);
-    $builder->applies(Argument::any(), $definition, Argument::any())
-      ->willReturn(TRUE);
     $builder->build(Argument::any(), $definition, Argument::any(), Argument::any())
       ->willReturn($property);
-    $builder->applies(Argument::any(), Argument::any(), Argument::any())
-      ->willReturn(FALSE);
     return $builder->reveal();
   }
 

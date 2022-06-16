@@ -9,7 +9,6 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Xylemical\Container\Definition\ServiceDefinition;
 use Xylemical\Container\Definition\ServiceInterface;
-use Xylemical\Container\Exception\InvalidDefinitionException;
 
 /**
  * Tests \Xylemical\Container\Builder\ServiceBuilder.
@@ -31,17 +30,14 @@ class ServiceBuilderTest extends TestCase {
   /**
    * Get a mock service builder.
    *
-   * @param bool $applies
-   *   The applies value.
    * @param \Xylemical\Container\Definition\ServiceInterface|null $service
    *   The service.
    *
    * @return \Xylemical\Container\Builder\ServiceBuilderInterface
    *   The mock service builder.
    */
-  protected function getMockServiceBuilder(bool $applies, ?ServiceInterface $service): ServiceBuilderInterface {
+  protected function getMockServiceBuilder(?ServiceInterface $service): ServiceBuilderInterface {
     $serviceBuilder = $this->prophesize(ServiceBuilderInterface::class);
-    $serviceBuilder->applies(Argument::any())->willReturn($applies);
     $serviceBuilder->build(Argument::any(), Argument::any())
       ->willReturn($service);
     return $serviceBuilder->reveal();
@@ -55,31 +51,17 @@ class ServiceBuilderTest extends TestCase {
 
     $builder = new ServiceBuilder();
     $service = $this->getMockService();
-    $s1 = $this->getMockServiceBuilder(FALSE, NULL);
-    $s2 = $this->getMockServiceBuilder(TRUE, $service);
+    $s1 = $this->getMockServiceBuilder(NULL);
+    $s2 = $this->getMockServiceBuilder($service);
 
     $definition = $this->getMockBuilder(ServiceDefinition::class)
       ->disableOriginalConstructor()
       ->getMock();
     $builder->setBuilders([$s1]);
-    $this->assertFalse($builder->applies($definition));
+    $this->assertNull($builder->build($definition, $mockBuilder));
 
     $builder->addBuilder($s2);
-    $this->assertTrue($builder->applies($definition));
     $this->assertSame($service, $builder->build($definition, $mockBuilder));
-  }
-
-  /**
-   * Test exception when build called without applies.
-   */
-  public function testException(): void {
-    $mockBuilder = $this->getMockBuilder(BuilderInterface::class)->getMock();
-    $definition = $this->getMockBuilder(ServiceDefinition::class)
-      ->disableOriginalConstructor()
-      ->getMock();
-    $builder = new ServiceBuilder();
-    $this->expectException(InvalidDefinitionException::class);
-    $builder->build($definition, $mockBuilder);
   }
 
 }

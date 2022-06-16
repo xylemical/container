@@ -18,21 +18,6 @@ interface PropertyBuilderInterface {
   public function __construct();
 
   /**
-   * Check the builder applies to the property source definition.
-   *
-   * @param string $name
-   *   The property name.
-   * @param mixed $property
-   *   The property definition.
-   * @param \Xylemical\Container\Definition\ServiceInterface $service
-   *   The service.
-   *
-   * @return bool
-   *   The result.
-   */
-  public function applies(string $name, mixed $property, ServiceInterface $service): bool;
-
-  /**
    * Get the property definition.
    *
    * @param string $name
@@ -44,9 +29,9 @@ interface PropertyBuilderInterface {
    * @param \Xylemical\Container\Builder\BuilderInterface $builder
    *   The property builder.
    *
-   * @return \Xylemical\Container\Definition\PropertyInterface
+   * @return \Xylemical\Container\Definition\PropertyInterface|null
    *   The property.
    */
-  public function build(string $name, mixed $property, ServiceInterface $service, BuilderInterface $builder): PropertyInterface;
+  public function build(string $name, mixed $property, ServiceInterface $service, BuilderInterface $builder): ?PropertyInterface;
 
 }

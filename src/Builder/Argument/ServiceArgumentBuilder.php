@@ -9,6 +9,7 @@ use Xylemical\Container\Builder\BuilderInterface;
 use Xylemical\Container\Definition\Argument\ServiceArgument;
 use Xylemical\Container\Definition\ArgumentInterface;
 use Xylemical\Container\Definition\ServiceInterface;
+use function is_string;
 
 /**
  * Provides a service argument builder.
@@ -18,15 +19,11 @@ class ServiceArgumentBuilder extends ArgumentBuilderBase {
   /**
    * {@inheritdoc}
    */
-  public function applies(mixed $argument, ServiceInterface $service): bool {
-    return is_string($argument) && str_starts_with($argument, '@');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function build(mixed $argument, ServiceInterface $service, BuilderInterface $builder): ArgumentInterface {
-    return new ServiceArgument(substr($argument, 1));
+  public function build(mixed $argument, ServiceInterface $service, BuilderInterface $builder): ?ArgumentInterface {
+    if (is_string($argument) && str_starts_with($argument, '@')) {
+      return new ServiceArgument(substr($argument, 1));
+    }
+    return NULL;
   }
 
 }

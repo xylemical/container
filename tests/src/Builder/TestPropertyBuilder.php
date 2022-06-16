@@ -22,15 +22,11 @@ class TestPropertyBuilder implements PropertyBuilderInterface {
   /**
    * {@inheritdoc}
    */
-  public function applies(string $name, mixed $property, ServiceInterface $service): bool {
-    return $name === 'test';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function build(string $name, mixed $property, ServiceInterface $service, BuilderInterface $builder): PropertyInterface {
-    return new TestProperty();
+  public function build(string $name, mixed $property, ServiceInterface $service, BuilderInterface $builder): ?PropertyInterface {
+    if ($name === 'test') {
+      return new TestProperty();
+    }
+    return NULL;
   }
 
 }

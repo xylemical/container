@@ -79,25 +79,13 @@ class ServiceBuilder extends ServiceBuilderBase {
 
   /**
    * {@inheritdoc}
-   */
-  public function applies(ServiceDefinition $service): bool {
-    foreach ($this->builders as $builder) {
-      if ($builder->applies($service)) {
-        return TRUE;
-      }
-    }
-    return $this->defaultBuilder->applies($service);
-  }
-
-  /**
-   * {@inheritdoc}
    *
    * @throws \Xylemical\Container\Exception\InvalidDefinitionException
    */
-  public function build(ServiceDefinition $service, BuilderInterface $builder): ServiceInterface {
+  public function build(ServiceDefinition $service, BuilderInterface $builder): ?ServiceInterface {
     foreach ($this->builders as $serviceBuilder) {
-      if ($serviceBuilder->applies($service)) {
-        return $serviceBuilder->build($service, $builder);
+      if ($result = $serviceBuilder->build($service, $builder)) {
+        return $result;
       }
     }
     return $this->defaultBuilder->build($service, $builder);

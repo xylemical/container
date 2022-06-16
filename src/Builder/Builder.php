@@ -108,19 +108,13 @@ class Builder implements BuilderInterface {
    * {@inheritdoc}
    */
   public function getService(ServiceDefinition $service): ?ServiceInterface {
-    if ($this->serviceBuilder->applies($service)) {
-      return $this->serviceBuilder->build($service, $this);
-    }
-    return NULL;
+    return $this->serviceBuilder->build($service, $this);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getArgument(ServiceInterface $service, mixed $argument): ?ArgumentInterface {
-    // ValueArgument will always apply, so allow applies() checks to take place,
-    // but it will always return TRUE.
-    $this->argumentBuilder->applies($argument, $service);
     return $this->argumentBuilder->build($argument, $service, $this);
   }
 
@@ -128,10 +122,7 @@ class Builder implements BuilderInterface {
    * {@inheritdoc}
    */
   public function getProperty(string $name, ServiceInterface $service, mixed $property): ?PropertyInterface {
-    if ($this->propertyBuilder->applies($name, $property, $service)) {
-      return $this->propertyBuilder->build($name, $property, $service, $this);
-    }
-    return NULL;
+    return $this->propertyBuilder->build($name, $property, $service, $this);
   }
 
   /**

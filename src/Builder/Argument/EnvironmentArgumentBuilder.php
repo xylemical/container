@@ -18,16 +18,11 @@ class EnvironmentArgumentBuilder extends ArgumentBuilderBase {
   /**
    * {@inheritdoc}
    */
-  public function applies(mixed $argument, ServiceInterface $service): bool {
-    return is_string($argument) && preg_match('/^%.*%$/', $argument);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function build(mixed $argument, ServiceInterface $service, BuilderInterface $builder): ArgumentInterface {
-    preg_match('/^%(.*?)(?::(.*?))?%$/', $argument, $match);
-    return new EnvironmentArgument($match[1], $match[2] ?? NULL);
+  public function build(mixed $argument, ServiceInterface $service, BuilderInterface $builder): ?ArgumentInterface {
+    if (is_string($argument) && preg_match('/^%(.*?)(?::(.*?))?%$/', $argument, $match)) {
+      return new EnvironmentArgument($match[1], $match[2] ?? NULL);
+    }
+    return NULL;
   }
 
 }

@@ -6,7 +6,6 @@ namespace Xylemical\Container\Builder;
 
 use Xylemical\Container\Definition\PropertyInterface;
 use Xylemical\Container\Definition\ServiceInterface;
-use Xylemical\Container\Exception\InvalidDefinitionException;
 
 /**
  * Provides a generic property builder.
@@ -65,25 +64,13 @@ class PropertyBuilder extends PropertyBuilderBase {
   /**
    * {@inheritdoc}
    */
-  public function applies(string $name, mixed $property, ServiceInterface $service): bool {
-    foreach ($this->builders as $builder) {
-      if ($builder->applies($name, $property, $service)) {
-        return TRUE;
-      }
-    }
-    return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function build(string $name, mixed $property, ServiceInterface $service, BuilderInterface $builder): PropertyInterface {
+  public function build(string $name, mixed $property, ServiceInterface $service, BuilderInterface $builder): ?PropertyInterface {
     foreach ($this->builders as $prop) {
-      if ($prop->applies($name, $property, $service)) {
-        return $prop->build($name, $property, $service, $builder);
+      if ($result = $prop->build($name, $property, $service, $builder)) {
+        return $result;
       }
     }
-    throw new InvalidDefinitionException();
+    return NULL;
   }
 
 }

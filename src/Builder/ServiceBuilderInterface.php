@@ -18,17 +18,6 @@ interface ServiceBuilderInterface {
   public function __construct();
 
   /**
-   * Check the builder applies to the service source definition.
-   *
-   * @param \Xylemical\Container\Definition\ServiceDefinition $service
-   *   The service source definition.
-   *
-   * @return bool
-   *   The result.
-   */
-  public function applies(ServiceDefinition $service): bool;
-
-  /**
    * Get the service definition.
    *
    * @param \Xylemical\Container\Definition\ServiceDefinition $service
@@ -36,9 +25,9 @@ interface ServiceBuilderInterface {
    * @param \Xylemical\Container\Builder\BuilderInterface $builder
    *   The builder.
    *
-   * @return \Xylemical\Container\Definition\ServiceInterface
+   * @return \Xylemical\Container\Definition\ServiceInterface|null
    *   The service.
    */
-  public function build(ServiceDefinition $service, BuilderInterface $builder): ServiceInterface;
+  public function build(ServiceDefinition $service, BuilderInterface $builder): ?ServiceInterface;
 
 }

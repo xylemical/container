@@ -22,17 +22,14 @@ abstract class ServiceBuilderBase implements ServiceBuilderInterface {
 
   /**
    * {@inheritdoc}
-   */
-  public function applies(ServiceDefinition $service): bool {
-    return class_exists($service->getClass());
-  }
-
-  /**
-   * {@inheritdoc}
    *
    * @throws \Xylemical\Container\Exception\InvalidDefinitionException
    */
-  public function build(ServiceDefinition $service, BuilderInterface $builder): ServiceInterface {
+  public function build(ServiceDefinition $service, BuilderInterface $builder): ?ServiceInterface {
+    if (!class_exists($service->getClass())) {
+      return NULL;
+    }
+
     $class = $service->getClass();
     $name = $service->getName();
     if (!class_exists($class) || !(class_exists($name) || interface_exists($name))) {

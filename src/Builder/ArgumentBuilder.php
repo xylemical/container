@@ -6,7 +6,6 @@ namespace Xylemical\Container\Builder;
 
 use Xylemical\Container\Definition\ArgumentInterface;
 use Xylemical\Container\Definition\ServiceInterface;
-use Xylemical\Container\Exception\InvalidDefinitionException;
 
 /**
  * Provides a generic argument builder.
@@ -65,25 +64,13 @@ class ArgumentBuilder extends ArgumentBuilderBase {
   /**
    * {@inheritdoc}
    */
-  public function applies(mixed $argument, ServiceInterface $service): bool {
-    foreach ($this->builders as $builder) {
-      if ($builder->applies($argument, $service)) {
-        return TRUE;
-      }
-    }
-    return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function build(mixed $argument, ServiceInterface $service, BuilderInterface $builder): ArgumentInterface {
+  public function build(mixed $argument, ServiceInterface $service, BuilderInterface $builder): ?ArgumentInterface {
     foreach ($this->builders as $arg) {
-      if ($arg->applies($argument, $service)) {
-        return $arg->build($argument, $service, $builder);
+      if ($result = $arg->build($argument, $service, $builder)) {
+        return $result;
       }
     }
-    throw new InvalidDefinitionException();
+    return NULL;
   }
 
 }

@@ -21,11 +21,6 @@ abstract class ArgumentBuilderBase implements ArgumentBuilderInterface {
   /**
    * {@inheritdoc}
    */
-  abstract public function applies(mixed $argument, ServiceInterface $service): bool;
-
-  /**
-   * {@inheritdoc}
-   */
-  abstract public function build(mixed $argument, ServiceInterface $service, BuilderInterface $builder): ArgumentInterface;
+  abstract public function build(mixed $argument, ServiceInterface $service, BuilderInterface $builder): ?ArgumentInterface;
 
 }

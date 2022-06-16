@@ -18,19 +18,6 @@ interface ArgumentBuilderInterface {
   public function __construct();
 
   /**
-   * Check the builder applies to the argument source definition.
-   *
-   * @param mixed $argument
-   *   The argument source definition.
-   * @param \Xylemical\Container\Definition\ServiceInterface $service
-   *   The service.
-   *
-   * @return bool
-   *   The result.
-   */
-  public function applies(mixed $argument, ServiceInterface $service): bool;
-
-  /**
    * Get the argument definition.
    *
    * @param mixed $argument
@@ -40,9 +27,9 @@ interface ArgumentBuilderInterface {
    * @param \Xylemical\Container\Builder\BuilderInterface $builder
    *   The builder.
    *
-   * @return \Xylemical\Container\Definition\ArgumentInterface
+   * @return \Xylemical\Container\Definition\ArgumentInterface|null
    *   The argument.
    */
-  public function build(mixed $argument, ServiceInterface $service, BuilderInterface $builder): ArgumentInterface;
+  public function build(mixed $argument, ServiceInterface $service, BuilderInterface $builder): ?ArgumentInterface;
 
 }

@@ -21,11 +21,6 @@ abstract class PropertyBuilderBase implements PropertyBuilderInterface {
   /**
    * {@inheritdoc}
    */
-  abstract public function applies(string $name, mixed $property, ServiceInterface $service): bool;
-
-  /**
-   * {@inheritdoc}
-   */
-  abstract public function build(string $name, mixed $property, ServiceInterface $service, BuilderInterface $builder): PropertyInterface;
+  abstract public function build(string $name, mixed $property, ServiceInterface $service, BuilderInterface $builder): ?PropertyInterface;
 
 }

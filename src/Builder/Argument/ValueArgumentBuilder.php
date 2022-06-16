@@ -18,13 +18,6 @@ class ValueArgumentBuilder extends ArgumentBuilderBase {
   /**
    * {@inheritdoc}
    */
-  public function applies(mixed $argument, ServiceInterface $service): bool {
-    return TRUE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function build(mixed $argument, ServiceInterface $service, BuilderInterface $builder): ArgumentInterface {
     return new ValueArgument($argument);
   }

@@ -21,8 +21,14 @@ class ServiceCollectorPropertyBuilderTest extends TestCase {
     $service = $this->getMockBuilder(ServiceInterface::class)->getMock();
 
     $builder = new ServiceCollectorPropertyBuilder();
-    $this->assertFalse($builder->applies('', '', $service));
-    $this->assertTrue($builder->applies('service.collector', [], $service));
+
+    $property = $builder->build(
+      '',
+      '',
+      $service,
+      $this->getMockBuilder(BuilderInterface::class)->getMock()
+    );
+    $this->assertNull($property);
 
     $property = $builder->build(
       'service.collector',
