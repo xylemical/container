@@ -106,7 +106,7 @@ class Source extends AbstractSource {
   /**
    * Set the service builders.
    *
-   * @param array $builders
+   * @param string[] $builders
    *   The service builders.
    *
    * @return $this
@@ -168,7 +168,7 @@ class Source extends AbstractSource {
   /**
    * Set all the argument builders.
    *
-   * @param array $builders
+   * @param string[] $builders
    *   The argument builders.
    *
    * @return $this
@@ -230,7 +230,7 @@ class Source extends AbstractSource {
   /**
    * Set all the property builders.
    *
-   * @param array $builders
+   * @param string[] $builders
    *   The property builders.
    *
    * @return $this
