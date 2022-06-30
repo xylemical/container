@@ -14,7 +14,7 @@ use Xylemical\Container\Definition\SourceInterface;
 use Xylemical\Container\Exception\CyclicDefinitionException;
 
 /**
- * Tests \Xylemical\Container\Compiler.
+ * Tests \Xylemical\Container\Compiler\Compiler.
  */
 class CompilerTest extends TestCase {
 

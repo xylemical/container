@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Xylemical\Container\Definition;
 
 /**
- * The source for the container.
+ * Provides the definition for the container.
  */
 interface DefinitionInterface {
 
